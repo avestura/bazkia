@@ -1,21 +1,13 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react"
+import { readFileSync } from "node:fs"
+import { defineConfig } from "vite"
 
-// https://vitejs.dev/config/
-export default defineConfig(async () => ({
+const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"))
+
+export default defineConfig({
   plugins: [react()],
-
-  // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
-  //
-  // 1. prevent vite from obscuring rust errors
+  define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   clearScreen: false,
-  // 2. tauri expects a fixed port, fail if that port is not available
-  server: {
-    port: 1420,
-    strictPort: true,
-    watch: {
-      // 3. tell vite to ignore watching `src-tauri`
-      ignored: ["**/src-tauri/**"],
-    },
-  },
-}));
+  server: { port: 1420, strictPort: true, watch: { ignored: ["**/src-tauri/**"] } },
+  build: { target: "es2022", chunkSizeWarningLimit: 900 },
+})

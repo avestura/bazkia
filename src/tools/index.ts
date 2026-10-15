@@ -1,0 +1,16 @@
+// Importing a module registers its tools. Order does not matter; the sidebar sorts by category.
+import "./io"
+import "./dataformat"
+import "./hashing"
+import "./crypto"
+import "./math"
+import "./text"
+import "./network"
+import "./datetime"
+import "./extract"
+import "./compression"
+import "./code"
+import "./generators"
+import "./magic"
+
+export { allTools, categories, getTool, searchTools } from "../core/registry"

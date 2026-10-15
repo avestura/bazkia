@@ -224,9 +224,15 @@ button {
 .react-flow__controls { border: var(--bx-border) solid var(--bx-line); box-shadow: none; }
 .react-flow__controls-button { border-radius: 0; border-block-end: var(--bx-border) solid var(--bx-line); }
 .react-flow__minimap { border: var(--bx-border) solid var(--bx-line); }
-/* Rubber-band and multi-select boxes: outline only, so the nodes underneath stay visible. */
-.react-flow__selection { border-radius: 0; background: transparent; border: var(--bx-border) dashed var(--bx-accent); }
-.react-flow__nodesselection-rect { border-radius: 0; background: transparent; border: var(--bx-border) dashed var(--bx-line-strong); }
+/* Rubber-band and multi-select boxes: outline only, so the nodes underneath stay visible.
+   The rubber band must be click-through. Its corner sits under the cursor while dragging, and
+   if it takes the pointer events the canvas loses them and the box shakes. The line is solid
+   because a dashed border re-phases every time the box resizes and reads as flicker. */
+.react-flow__selection { border-radius: 0; background: transparent; border: var(--bx-border) solid var(--bx-accent); pointer-events: none; }
+.react-flow__nodesselection-rect { border-radius: 0; background: transparent; border: var(--bx-border) solid var(--bx-line-strong); }
+/* One steady cursor for the whole drag, whatever the box passes over. */
+.react-flow:has(.react-flow__selection),
+.react-flow:has(.react-flow__selection) * { cursor: crosshair !important; }
 
 /* ---- nodes ---- */
 .bz-node {

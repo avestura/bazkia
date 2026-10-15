@@ -202,7 +202,7 @@ button {
   --xy-connectionline-stroke-width: 1.5;
   --xy-handle-background-color: var(--bx-surface);
   --xy-handle-border-color: var(--bx-line-strong);
-  --xy-selection-background-color: var(--bx-accent-soft);
+  --xy-selection-background-color: transparent;
   --xy-selection-border: 1px solid var(--bx-accent);
   --xy-controls-button-background-color: var(--bx-surface);
   --xy-controls-button-background-color-hover: var(--bx-surface-hover);
@@ -224,8 +224,9 @@ button {
 .react-flow__controls { border: var(--bx-border) solid var(--bx-line); box-shadow: none; }
 .react-flow__controls-button { border-radius: 0; border-block-end: var(--bx-border) solid var(--bx-line); }
 .react-flow__minimap { border: var(--bx-border) solid var(--bx-line); }
-.react-flow__nodesselection-rect { border-radius: 0; }
-.react-flow__selection { border-radius: 0; }
+/* Rubber-band and multi-select boxes: outline only, so the nodes underneath stay visible. */
+.react-flow__selection { border-radius: 0; background: transparent; border: var(--bx-border) dashed var(--bx-accent); }
+.react-flow__nodesselection-rect { border-radius: 0; background: transparent; border: var(--bx-border) dashed var(--bx-line-strong); }
 
 /* ---- nodes ---- */
 .bz-node {

@@ -1,0 +1,262 @@
+# Marketing and landing components
+
+Mostly `editorial` mode. The challenge here is warmth without roundness: the answer
+is whitespace, big type, and a single inverted block - never gradients or soft
+shadows.
+
+---
+
+## Hero
+
+Two layouts. Pick by whether you have a strong product visual.
+
+**Stacked** (no visual, or visual below): eyebrow, h1 at `--bx-text-6xl` capped at
+16ch, lead paragraph at 18px capped at 56ch, action group, then a full-bleed 1px rule
+and the product shot below it.
+
+**Split**: 7/5 columns with a 1px vertical rule between them. Copy on the left,
+product surface on the right, bleeding off the right edge of the container so the
+rail crops it - this reads as deliberate framing rather than a floating screenshot.
+
+```html
+<section class="bx-section">
+  <div class="bx-container" style="display: grid; grid-template-columns: 7fr 5fr;
+              gap: 0; align-items: center">
+    <div style="padding-inline-end: 64px">
+      <p class="bx-label">Infrastructure</p>
+      <h1 style="font-size: clamp(2rem, 1.2rem + 4vw, 4.5rem); line-height: 1;
+                 letter-spacing: -0.03em; max-width: 14ch; margin-top: 24px">
+        Ship faster on hardware you never think about
+      </h1>
+      <p style="font-size: var(--bx-text-lg); color: var(--bx-ink-muted);
+                max-width: 52ch; margin-top: 24px">
+        Deploy to 310 edge locations with a single command.
+      </p>
+      <div class="bx-btn-group" style="margin-top: 40px">
+        <a class="bx-btn bx-btn--primary bx-btn--lg" href="#">Start building</a>
+        <a class="bx-btn bx-btn--lg" href="#">Read the docs</a>
+      </div>
+      <p class="bx-label" style="margin-top: 24px">
+        No credit card &middot; 4,000 free builds
+      </p>
+    </div>
+    <div style="border-inline-start: 1px solid var(--bx-line); padding-inline-start: 64px">
+      <!-- product surface -->
+    </div>
+  </div>
+</section>
+```
+
+Rules:
+- Never center-align a split hero's copy.
+- Maximum two actions. Primary solid, secondary outline, in a shared-border group.
+- The trust line under the actions is a mono label, not body text.
+- No background image behind hero text. If you need texture, use the 32px grid
+  substrate at 5% and keep the text on a solid block.
+
+---
+
+## Feature grid
+
+The single most important editorial pattern: a collapsed grid so the whole section
+reads as one ruled table.
+
+```html
+<section class="bx-section">
+  <div class="bx-container">
+    <p class="bx-label">02 / Platform</p>
+    <h2 style="margin-top: 12px; max-width: 20ch">Everything the team needs</h2>
+    <div class="bx-collapse" style="grid-template-columns: repeat(3, 1fr); margin-top: 64px">
+      <div style="padding: 40px 32px">
+        <svg width="20" height="20" stroke="currentColor" fill="none" stroke-width="1.5"
+             style="color: var(--bx-ink)" aria-hidden="true"><!-- icon --></svg>
+        <h3 style="margin-top: 24px; font-size: var(--bx-text-xl)">Instant rollback</h3>
+        <p style="margin-top: 12px; color: var(--bx-ink-muted); font-size: var(--bx-text-base)">
+          Every deploy is immutable and addressable. Roll back in under a second.
+        </p>
+        <a href="#" style="display: inline-block; margin-top: 20px;
+                           font-size: var(--bx-text-base); font-weight: 500">
+          Learn more &rarr;
+        </a>
+      </div>
+      <!-- 5 more cells -->
+    </div>
+  </div>
+</section>
+```
+
+- 3 columns at `lg`, 2 at `md`, 1 at `sm`. Keep the 1px gap at every breakpoint.
+- Cell padding 32-40px. All cells equal height - the grid handles it.
+- Icons: 20px, 1.5px stroke, `--bx-ink` (not accent). Line icons only, never filled,
+  never colored, never emoji.
+- Optionally number the cells with a mono `01`-`06` in `--bx-ink-faint` at the top
+  right of each cell. Very on-brand for `blueprint`.
+- One asymmetric cell (spanning 2 columns, holding a visual) is allowed per grid to
+  break the rhythm.
+
+---
+
+## Logo wall
+
+- Mono uppercase label above: `TRUSTED BY TEAMS AT`.
+- Logos in a collapsed grid, 6 across at `lg`, 3 at `sm`, each cell 96px tall with
+  the logo centered at 24px height.
+- Render logos in `--bx-ink-muted` monochrome via `filter: grayscale(1)` plus
+  reduced opacity, going full-color on hover only if the brands permit it.
+  Monochrome is the more disciplined default.
+- Never scroll them in an infinite marquee.
+
+---
+
+## Pricing
+
+A collapsed grid of 3-4 columns - literally a table, which is the honest form.
+
+Per column:
+1. Plan name (mono label) and price. Price at `--bx-text-4xl` mono tabular, the
+   `/month` in 14px `--bx-ink-subtle`.
+2. One-line positioning statement, `--bx-ink-muted`, 40px min-height so the CTAs
+   align across columns.
+3. A full-width CTA button. Only the recommended plan gets the primary variant.
+4. A 1px `--bx-line-subtle` rule, then the feature list: 32px rows, a 16px check
+   glyph in `--bx-ink` (not green), 14px text. Absent features get a 16px dash in
+   `--bx-ink-faint`, never a red X.
+
+The recommended plan is marked by inverting its header block
+(`--bx-surface-inverse`) and adding a mono `RECOMMENDED` label - not by scaling the
+card up, not by a colored glow.
+
+For more than four plans or many features, use a real comparison table with a sticky
+header row, per `components-data.md`: group rows under mono labels on sunken strips,
+a drawn check or a faint dash per cell (never a red X), mono values where the cell is
+a number.
+
+**Billing toggle**: a segmented control (`components-forms.md`) - `Monthly` /
+`Yearly` - at the inline end of the section heading, with the saving as a success
+tag inside the yearly segment. Switching swaps the prices in place; the `/month`
+suffix becomes `/mo, billed yearly`. Never hide the monthly price.
+
+## FAQ
+
+- Two columns in `editorial`: a sticky 5/12 heading column (title, one line, and a
+  contact card with real people and a response time), and a 7/12 accordion.
+- The accordion is exclusive and numbered (`components-content.md`). Six to ten
+  questions; beyond that, group them and filter with a segmented control that hides
+  non-matching items in place and announces the count (`aria-live`).
+- Answers are short and concrete, with a link to the docs for depth. An FAQ that
+  dead-ends without a way to reach a human is a wall.
+
+## Blog
+
+**Index**: a large display title, one featured post as a 7/5 split (a figure panel
+bleeding to the rule on one side, tags, headline at 32px, excerpt, author meta row),
+underline tabs for categories, then the rest in a 3-column collapsed grid of
+link-cells - figure, mono `CATEGORY · DATE` label, 18px title, two-line excerpt,
+author. Whole cell is the link. Pagination as the shared-border group with a mono
+`SHOWING 1–3 OF 86` caption.
+
+**Article**: breadcrumb, 54px display title capped at 16ch, an 18px lede, a meta row
+between two rules, then prose (`components-content.md`) at 68ch with a 208px sticky
+on-this-page column and a reading-progress bar. End with tags, share actions, and a
+previous/next pair as a two-cell collapsed grid.
+
+Figures are hatched placeholder panels or real diagrams in line art - never stock
+photography with a gradient overlay.
+
+---
+
+## CTA band
+
+The one inverted block per page.
+
+Use the `.bx-inverse` scope (in `boxy.css`) rather than hand-styling the children.
+It remaps the role tokens inside itself, so ordinary components render correctly
+and stay correct in both themes:
+
+```html
+<section class="bx-inverse" style="border-block: 1px solid var(--bx-line)">
+  <div class="bx-container" style="padding-block: 96px; display: flex;
+              justify-content: space-between; align-items: center; gap: 48px">
+    <div>
+      <h2 style="font-size: var(--bx-text-3xl); max-width: 20ch">
+        Start shipping in under five minutes
+      </h2>
+      <p style="margin-top: 12px; color: var(--bx-ink-muted); max-width: 48ch">
+        Free for personal projects. No credit card required.
+      </p>
+    </div>
+    <div class="bx-btn-group" style="flex-shrink: 0">
+      <a class="bx-btn bx-btn--lg bx-btn--contrast" href="#">Create account</a>
+      <a class="bx-btn bx-btn--lg" href="#">Talk to us</a>
+    </div>
+  </div>
+</section>
+```
+
+Inside the scope, `--bx-surface`, `--bx-ink`, `--bx-ink-muted`, `--bx-line` and
+`--bx-focus` all point at their inverse counterparts, so `.bx-btn` renders as a
+light outline on the dark block with no overrides. The filled action uses
+`.bx-btn--contrast` (`background: var(--bx-ink); color: var(--bx-canvas)`), which
+inverts against whatever scope it sits in.
+
+**The failure this prevents.** Hand-styling the children with primitives is the
+classic way an inverted CTA breaks:
+
+```html
+<!-- wrong: --bx-n-700 is a fixed value that does not flip with the theme, so in
+     dark mode this puts near-black --bx-ink-inverse text on a dark grey group -->
+<div class="bx-btn-group" style="background: var(--bx-n-700)">
+  <a class="bx-btn" style="color: var(--bx-ink-inverse)">Talk to us</a>
+</div>
+```
+
+`boxy-check` flags any `--bx-n-*` / `--bx-a-*` in component code for exactly this
+reason. Re-check contrast inside any inverted block: `--bx-ink-muted` is the body
+colour, and plain `--bx-accent` is too dark against a dark block — the scope
+already swaps links to `--bx-ink-accent-inverse`.
+
+---
+
+## Footer
+
+- Full-bleed 1px `--bx-line` top rule, `--bx-surface-sunken`, 64px block padding.
+- A collapsed grid: 4-5 link columns plus a wider brand cell. Column headings are
+  mono labels; links are 14px `--bx-ink-muted` in a 28px-tall stack.
+- Bottom bar separated by a 1px rule: copyright, legal links, locale and theme
+  selectors, and a mono build string (`v2.14.0 - build 8f3a1c`) at the inline end.
+  That build string is a small, very on-brand detail.
+- Status indicator: an 8px square in `--bx-success` plus `ALL SYSTEMS OPERATIONAL`
+  in mono, linking to the status page.
+
+---
+
+## Docs layout
+
+Three columns, separated by 1px rules, no shadows anywhere.
+
+```
+| sidebar 256px | content 1fr (prose 68ch) | on-this-page 224px |
+```
+
+- Sidebar: per `components-core.md`. Section headings as mono labels on sunken
+  strips; the active page gets a 2px accent inset left border.
+- Content: `--bx-container-prose`, 16px body, 32px top margin on h2 with a 1px rule
+  above it, 24px on h3.
+- Code blocks: `--bx-surface-sunken`, 1px `--bx-line`, 16px padding, 13px mono,
+  a 32px header strip with the language as a mono label and a copy button at the end.
+  Square, no radius, no traffic-light dots.
+- Callouts: 1px border with a 3px semantic left border, mono uppercase kind label,
+  per `color.md`.
+- On-this-page: mono labels, 24px rows, 2px accent left border on the active
+  heading, tracked with an intersection observer.
+- Search: a 32px input in the header opening the command palette
+  (`components-forms.md`).
+
+---
+
+## Changelog
+
+An excellent fit for the aesthetic. A two-column layout: a 160px left column holding
+a mono date and version tag, sticky as you scroll the entry; the entry body on the
+right. A 1px `--bx-line` rule between entries, full-bleed. Tag each entry with square
+`ADDED` / `FIXED` / `BREAKING` labels in their semantic colors.

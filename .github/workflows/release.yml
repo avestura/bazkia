@@ -1,0 +1,83 @@
+name: Release
+
+# Push a tag like v0.2.0 and installers for Windows, macOS and Linux
+# are built and attached to a GitHub release.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    name: Tag matches versions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare tag with package.json, tauri.conf.json and Cargo.toml
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(node -p "require('./package.json').version")
+          tauri=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          cargo=$(grep -m1 '^version' src-tauri/Cargo.toml | sed -E 's/.*"(.*)"/\1/')
+          echo "tag=$tag package.json=$pkg tauri.conf.json=$tauri Cargo.toml=$cargo"
+          if [ "$tag" != "$pkg" ] || [ "$tag" != "$tauri" ] || [ "$tag" != "$cargo" ]; then
+            echo "::error::Versions disagree. Run 'npm run version:set $tag' and retag."
+            exit 1
+          fi
+
+  build:
+    name: Build ${{ matrix.label }}
+    needs: verify
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: Windows
+            os: windows-latest
+            args: ""
+          - label: macOS (Apple silicon)
+            os: macos-latest
+            args: "--target aarch64-apple-darwin"
+          - label: macOS (Intel)
+            os: macos-latest
+            args: "--target x86_64-apple-darwin"
+          - label: Linux
+            os: ubuntu-22.04
+            args: ""
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.os == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+          key: ${{ matrix.label }}
+      - name: Install system libraries
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - run: npm ci
+      - run: npm test
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "Bazkia ${{ github.ref_name }}"
+          releaseBody: |
+            Installers are attached below. They are not code-signed yet, so Windows SmartScreen and macOS Gatekeeper will ask you to confirm the first launch.
+            See the commit history since the previous tag for what changed.
+          releaseDraft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          args: ${{ matrix.args }}

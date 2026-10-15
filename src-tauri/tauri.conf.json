@@ -1,44 +1,43 @@
 {
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Bazkia",
+  "mainBinaryName": "bazkia",
+  "version": "0.1.0",
+  "identifier": "dev.avestura.bazkia",
   "build": {
-    "beforeDevCommand": "bun run dev",
-    "beforeBuildCommand": "bun run build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist"
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
   },
-  "package": {
-    "productName": "bazkia",
-    "version": "0.1.0"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      }
-    },
+  "app": {
     "windows": [
       {
-        "title": "bazkia",
-        "width": 800,
-        "height": 600,
-        "fileDropEnabled": false
+        "label": "main",
+        "title": "Bazkia",
+        "width": 1360,
+        "height": 840,
+        "minWidth": 900,
+        "minHeight": 600,
+        "dragDropEnabled": false
       }
     ],
     "security": {
-      "csp": null
-    },
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "identifier": "dev.avestura.bazkia",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ]
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost; worker-src 'self' blob:"
     }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "DeveloperTool",
+    "shortDescription": "Visual developer tools",
+    "longDescription": "Wire small developer tools together into live graphs.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
   }
 }

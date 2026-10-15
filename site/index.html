@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en" data-mode="editorial">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Bazkia</title>
+    <meta name="description" content="Bazkia is a desktop and browser app for small developer tools. Wire them together on a canvas and everything recomputes as you type." />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="stylesheet" href="assets/boxy.css" />
+    <link rel="stylesheet" href="assets/boxy-components.css" />
+    <link rel="stylesheet" href="assets/site.css" />
+    <script>
+      // Apply a saved theme before first paint so there is no flash.
+      try {
+        var t = localStorage.getItem("bazkia-site:theme");
+        if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <a class="bx-skip" href="#main">Skip to content</a>
+
+    <header class="st-nav">
+      <div class="bx-container st-nav__row">
+        <a class="st-brand" href="./" aria-label="Bazkia home">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+            <rect x="1" y="1" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <rect x="5" y="5" width="6" height="6" fill="currentColor" />
+          </svg>
+          <span>BAZKIA</span>
+        </a>
+        <nav class="st-nav__links" aria-label="Primary">
+          <a href="#how">How it works</a>
+          <a href="#tools">Tools</a>
+          <a href="#get">Get it</a>
+          <a href="https://github.com/avestura/bazkia">GitHub</a>
+        </nav>
+        <button class="bx-btn bx-btn--sm bx-btn--ghost" id="theme" type="button" aria-label="Switch colour theme">Theme</button>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- Hero -->
+      <section class="bx-section st-hero">
+        <div class="bx-container">
+          <p class="bx-label">v{{VERSION}} &middot; Windows, macOS, Linux and the browser</p>
+          <h1>Small developer tools, wired together.</h1>
+          <p class="st-lead">
+            Bazkia puts one tool in each box on a canvas. Base64, a hash, a JWT decoder, a regex. Draw a line from one box to the next and the whole chain
+            recomputes every time you type.
+          </p>
+          <div class="bx-btn-group st-actions">
+            <a class="bx-btn bx-btn--primary bx-btn--lg" href="app/">Open it in your browser</a>
+            <a class="bx-btn bx-btn--lg" href="#get">Download</a>
+          </div>
+          <p class="bx-label st-trust">{{TOOL_COUNT}} tools &middot; no account &middot; nothing is uploaded</p>
+        </div>
+        <div class="bx-container st-shot-wrap">
+          <figure class="st-shot">
+            <img class="st-shot__dark" src="assets/shots/jwt-dark.png" width="1440" height="900" alt="Bazkia with a JWT decoded into header and payload, the expiry pulled out and turned into a date." />
+            <img class="st-shot__light" src="assets/shots/magic-light.png" width="1440" height="900" alt="Bazkia in the light theme, decoding an unknown string with the Magic tool." />
+          </figure>
+        </div>
+      </section>
+
+      <!-- 01 How it works -->
+      <section class="bx-section" id="how">
+        <div class="bx-container">
+          <p class="bx-label">01 / How it works</p>
+          <h2 class="st-h2">A graph instead of a recipe.</h2>
+          <div class="bx-collapse st-cols">
+            <div class="st-cell">
+              <p class="st-num">01</p>
+              <h3>Put tools on the canvas</h3>
+              <p>
+                Press <kbd class="bx-kbd">Ctrl</kbd> <kbd class="bx-kbd">K</kbd>, type a few letters of what you want, hit enter. Or drag from the list on the left.
+                A node is a tool: it has inputs on the left, outputs on the right and its settings in the middle.
+              </p>
+            </div>
+            <div class="st-cell">
+              <p class="st-num">02</p>
+              <h3>Draw lines between them</h3>
+              <p>
+                Drag from an output to an input. Let go over empty space and Bazkia offers a tool to add and connect in one step. A line can also feed a setting, so the
+                key for an HMAC can come from another node instead of being typed in.
+              </p>
+            </div>
+            <div class="st-cell">
+              <p class="st-num">03</p>
+              <h3>Change anything, see everything</h3>
+              <p>
+                Edit the text at the start and every node downstream updates. Branches fan out, so one input can go to a SHA-256 and an MD5 at the same time. Broken
+                steps show their error on the node and only block what depends on them.
+              </p>
+            </div>
+          </div>
+
+          <div class="st-split">
+            <div>
+              <h3>Wire a setting, not just a value</h3>
+              <p class="st-muted">
+                Every setting has a small square on its left edge. Link a node into it and the control is replaced by the incoming value. In this example the HMAC key is
+                its own Text node, so changing the key and the message are two separate edits.
+              </p>
+              <p class="st-muted">
+                The result on screen, <code class="bx-code">5bdcc146…ec3843</code>, is the HMAC-SHA256 test vector from RFC 4231.
+              </p>
+            </div>
+            <img class="st-img" src="assets/shots/hmac-dark.png" width="1560" height="858" loading="lazy" alt="An HMAC node whose key setting is linked to a separate Text node." />
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 Tools -->
+      <section class="bx-section" id="tools">
+        <div class="bx-container">
+          <p class="bx-label">02 / The tools</p>
+          <h2 class="st-h2">{{TOOL_COUNT}} tools in {{CATEGORY_COUNT}} groups.</h2>
+          <p class="st-lead st-lead--sm">
+            The catalogue follows <a href="https://cyberchef.io">CyberChef</a>, which is the thing to beat for this kind of work. The code is written from scratch in TypeScript,
+            using small libraries where it makes sense and the browser's own crypto for AES. Everything runs on your machine.
+          </p>
+
+          <div class="st-search">
+            <div class="bx-search">
+              <svg class="bx-icon" aria-hidden="true"><use href="assets/boxy-icons.svg#i-search" /></svg>
+              <input class="bx-input" id="q" type="search" placeholder="Search the catalogue: base58, crc, cron, jwt…" aria-label="Search tools" autocomplete="off" />
+            </div>
+          </div>
+          <div class="st-cats" id="cats" aria-live="polite">
+            <noscript><p>The searchable catalogue needs JavaScript. The app itself lists every tool in its sidebar.</p></noscript>
+          </div>
+
+          <div class="bx-callout bx-callout--info st-note">
+            <svg class="bx-icon" aria-hidden="true"><use href="assets/boxy-icons.svg#i-info" /></svg>
+            <div>
+              <strong>Not everything is here yet.</strong>
+              <p>
+                CyberChef has roughly twice as many operations. Still missing: image processing, PGP, RSA and X.509, the Enigma-style cipher machines, protobuf, OCR, YARA and
+                CyberChef's flow-control operations, which a graph makes unnecessary anyway. Magic, the auto-decoder, is a smaller cousin of the original.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 Details -->
+      <section class="bx-section" id="details">
+        <div class="bx-container">
+          <p class="bx-label">03 / Small things that matter</p>
+          <h2 class="st-h2">Built to be used all day.</h2>
+          <div class="bx-collapse st-grid">
+            <div class="st-cell">
+              <h3>Local only</h3>
+              <p>No telemetry, no accounts, no network requests of its own. Hashing a password or decoding a token never leaves the window.</p>
+            </div>
+            <div class="st-cell">
+              <h3>Undo and redo</h3>
+              <p>Moves, new links, deleted nodes and settings are all undoable. Typing in one field counts as one step.</p>
+            </div>
+            <div class="st-cell">
+              <h3>Live nodes</h3>
+              <p>Counter, Clock and TOTP re-run on a timer. Debounce holds a value back until you stop typing. Random generators have a re-roll button.</p>
+            </div>
+            <div class="st-cell">
+              <h3>Projects are files</h3>
+              <p>Save a graph as plain JSON, open it later or send it to a colleague. The browser version keeps an autosave in local storage.</p>
+            </div>
+            <div class="st-cell">
+              <h3>Checked against test vectors</h3>
+              <p>Hashes, HMAC, AES, HOTP, CRC, Base32, Base45 and Punycode are tested against published values, not just round trips.</p>
+            </div>
+            <div class="st-cell">
+              <h3>Light and dark</h3>
+              <p>Follows the system by default. The whole interface is square, on an 8 pixel grid, and made from the Boxy design system.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Get it -->
+      <section class="bx-inverse st-get" id="get">
+        <div class="bx-container st-get__row">
+          <div>
+            <p class="bx-label">04 / Get it</p>
+            <h2 class="st-h2">Pick the one you want.</h2>
+            <p class="st-get__lead">
+              The browser version is the same code, with save and open going through downloads. Desktop installers are not code-signed yet, so Windows and macOS
+              will ask you to confirm the first launch.
+            </p>
+          </div>
+          <div class="st-dl" id="downloads">
+            <a class="bx-btn bx-btn--lg bx-btn--contrast" href="app/">Open in browser</a>
+            <a class="bx-btn bx-btn--lg" data-os="windows" href="https://github.com/avestura/bazkia/releases/latest">Windows</a>
+            <a class="bx-btn bx-btn--lg" data-os="mac" href="https://github.com/avestura/bazkia/releases/latest">macOS</a>
+            <a class="bx-btn bx-btn--lg" data-os="linux" href="https://github.com/avestura/bazkia/releases/latest">Linux</a>
+            <p class="bx-label" id="dl-note">All releases on GitHub</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="bx-section" id="source">
+        <div class="bx-container st-split st-split--top">
+          <div>
+            <p class="bx-label">05 / From source</p>
+            <h2 class="st-h2">Build it yourself.</h2>
+            <p class="st-muted">
+              You need Node 22 or newer. For the desktop app you also need Rust and the <a href="https://tauri.app/start/prerequisites/">Tauri prerequisites</a> for your system.
+            </p>
+          </div>
+          <pre class="bx-codeblock"><code>git clone https://github.com/avestura/bazkia
+cd bazkia
+npm install
+
+npm run dev           # browser, with hot reload
+npm run tauri dev     # desktop window
+npm test              # tool tests
+npm run tauri build   # installer for this OS</code></pre>
+        </div>
+      </section>
+
+      <section class="bx-section st-credits" id="credits">
+        <div class="bx-container">
+          <p class="bx-label">06 / Credits</p>
+          <h2 class="st-h2">Standing on other people's work.</h2>
+          <ul class="bx-list bx-list--ruled st-credit-list">
+            <li><a href="https://cyberchef.io">CyberChef</a>, from GCHQ, is the model for the catalogue. Bazkia is not affiliated with it and shares no code with it.</li>
+            <li><a href="https://github.com/avestura/boxy-design-skill">Boxy</a> is the design system behind the app and this page.</li>
+            <li><a href="https://tauri.app">Tauri</a> for the desktop shell, <a href="https://reactflow.dev">React Flow</a> for the canvas.</li>
+            <li><a href="https://github.com/paulmillr/noble-hashes">noble-hashes</a> and <a href="https://github.com/101arrowz/fflate">fflate</a> for hashing and compression.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="st-footer">
+      <div class="bx-container st-footer__row">
+        <span class="bx-label">Bazkia v{{VERSION}}</span>
+        <span class="st-footer__links">
+          <a href="https://github.com/avestura/bazkia">Source</a>
+          <a href="https://github.com/avestura/bazkia/issues">Issues</a>
+          <a href="https://github.com/avestura/bazkia/releases">Releases</a>
+        </span>
+      </div>
+    </footer>
+
+    <script src="assets/site.js"></script>
+  </body>
+</html>

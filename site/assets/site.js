@@ -75,6 +75,17 @@
   }
   if (input) input.addEventListener("input", function () { render(input.value); });
 
+  // ---- copy buttons on code blocks (Boxy: [data-copy] holds the text, without comments) ----
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-copy]");
+    if (!b || !navigator.clipboard) return;
+    navigator.clipboard.writeText(b.getAttribute("data-copy")).then(function () {
+      var was = b.textContent;
+      b.textContent = "copied";
+      setTimeout(function () { b.textContent = was; }, 1200);
+    });
+  });
+
   // ---- downloads: point the buttons at the newest release's assets ----
   var note = document.getElementById("dl-note");
   fetch("https://api.github.com/repos/avestura/bazkia/releases/latest", { headers: { Accept: "application/vnd.github+json" } })

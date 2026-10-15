@@ -55,6 +55,8 @@ interface State {
   removeSelected: () => void
   duplicateSelected: () => void
   selectAll: () => void
+  /** Selects exactly these nodes (and clears edge selection). A no-op when nothing changes. */
+  setSelection: (ids: Set<string>) => void
   bump: (id: string) => void
   commit: () => void
   undo: () => void
@@ -240,6 +242,17 @@ export const useStore = create<State>((set, get) => {
     },
 
     selectAll: () => set({ nodes: get().nodes.map((n) => ({ ...n, selected: true })) }),
+
+    setSelection: (ids) => {
+      const { nodes, edges } = get()
+      const changed = nodes.some((n) => !!n.selected !== ids.has(n.id))
+      const edgesSelected = edges.some((e) => e.selected)
+      if (!changed && !edgesSelected) return
+      set({
+        nodes: changed ? nodes.map((n) => (!!n.selected === ids.has(n.id) ? n : { ...n, selected: ids.has(n.id) })) : nodes,
+        edges: edgesSelected ? edges.map((e) => (e.selected ? { ...e, selected: false } : e)) : edges,
+      })
+    },
 
     bump: (id) => {
       ticks[id] = (ticks[id] ?? 0) + 1

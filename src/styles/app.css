@@ -224,15 +224,24 @@ button {
 .react-flow__controls { border: var(--bx-border) solid var(--bx-line); box-shadow: none; }
 .react-flow__controls-button { border-radius: 0; border-block-end: var(--bx-border) solid var(--bx-line); }
 .react-flow__minimap { border: var(--bx-border) solid var(--bx-line); }
-/* Rubber-band and multi-select boxes: outline only, so the nodes underneath stay visible.
-   The rubber band must be click-through. Its corner sits under the cursor while dragging, and
-   if it takes the pointer events the canvas loses them and the box shakes. The line is solid
-   because a dashed border re-phases every time the box resizes and reads as flicker. */
-.react-flow__selection { border-radius: 0; background: transparent; border: var(--bx-border) solid var(--bx-accent); pointer-events: none; }
+/* Rubber-band box, drawn by useMarquee. A faint accent tint keeps the nodes underneath visible. */
+.bz-marquee {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: 6;
+  pointer-events: none;
+  border: var(--bx-border) solid var(--bx-accent);
+  background: color-mix(in srgb, var(--bx-accent) 6%, transparent);
+  will-change: transform, width, height;
+}
+.bz-marquee[hidden] { display: none; }
+/* One steady cursor and no text selection for the whole drag. Set on the container, not via :has(). */
+.bz-canvas[data-marquee] { user-select: none; }
+.bz-canvas[data-marquee] .react-flow__pane,
+.bz-canvas[data-marquee] .react-flow__node,
+.bz-canvas[data-marquee] .react-flow__edge { cursor: crosshair !important; }
 .react-flow__nodesselection-rect { border-radius: 0; background: transparent; border: var(--bx-border) solid var(--bx-line-strong); }
-/* One steady cursor for the whole drag, whatever the box passes over. */
-.react-flow:has(.react-flow__selection),
-.react-flow:has(.react-flow__selection) * { cursor: crosshair !important; }
 
 /* ---- nodes ---- */
 .bz-node {

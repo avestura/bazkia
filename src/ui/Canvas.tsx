@@ -5,17 +5,25 @@ import {
   Controls,
   MiniMap,
   ReactFlow,
-  SelectionMode,
   useReactFlow,
   type OnConnectEnd,
 } from "@xyflow/react"
 import { useCallback, useEffect, useRef } from "react"
+import { useMarquee } from "./useMarquee"
 import { parseProject } from "../core/files"
 import { beginDrag, useStore } from "../core/store"
 import { ToolNode } from "./ToolNode"
 
 const nodeTypes = { tool: ToolNode }
 const defaultEdgeOptions = { type: "step" as const }
+
+// Props that React Flow compares by reference must be stable. Fresh array and object literals
+// on every render make it re-apply them to its store each time, which re-renders every node.
+const SNAP_GRID: [number, number] = [8, 8]
+const PAN_BUTTONS = [1, 2]
+const MULTI_SELECT_KEYS = ["Shift", "Meta", "Control"]
+const PRO_OPTIONS = { hideAttribution: true }
+const MINIMAP_STYLE = { width: 160, height: 104 }
 
 export const DND_TYPE = "application/x-bazkia-tool"
 
@@ -28,6 +36,9 @@ export function Canvas() {
   const isValidConnection = useStore((s) => s.isValidConnection)
   const rf = useReactFlow()
   const loadedFor = useRef<string | null>(null)
+  const root = useRef<HTMLDivElement>(null)
+  const marquee = useRef<HTMLDivElement>(null)
+  useMarquee(root, marquee)
   const name = useStore((s) => s.name)
   const empty = nodes.length === 0
 
@@ -82,6 +93,7 @@ export function Canvas() {
 
   return (
     <div
+      ref={root}
       className="bz-canvas"
       onDrop={onDrop}
       onDragOver={(e) => {
@@ -103,23 +115,23 @@ export function Canvas() {
         onSelectionDragStart={beginDrag}
         connectionMode={ConnectionMode.Strict}
         snapToGrid
-        snapGrid={[8, 8]}
+        snapGrid={SNAP_GRID}
         deleteKeyCode={null}
-        selectionOnDrag
-        selectionMode={SelectionMode.Partial}
-        panOnDrag={[1, 2]}
+        selectionOnDrag={false}
+        panOnDrag={PAN_BUTTONS}
         panActivationKeyCode="Space"
-        multiSelectionKeyCode={["Shift", "Meta", "Control"]}
+        multiSelectionKeyCode={MULTI_SELECT_KEYS}
         minZoom={0.1}
         maxZoom={2}
-        proOptions={{ hideAttribution: true }}
+        proOptions={PRO_OPTIONS}
         elevateEdgesOnSelect
       >
         <Background id="minor" variant={BackgroundVariant.Lines} gap={8} lineWidth={1} className="bz-grid-minor" />
         <Background id="major" variant={BackgroundVariant.Lines} gap={64} lineWidth={1} className="bz-grid-major" />
         <Controls showInteractive={false} position="bottom-left" />
-        <MiniMap pannable zoomable position="bottom-right" nodeStrokeWidth={1} nodeBorderRadius={0} style={{ width: 160, height: 104 }} />
+        <MiniMap pannable zoomable position="bottom-right" nodeStrokeWidth={1} nodeBorderRadius={0} style={MINIMAP_STYLE} />
       </ReactFlow>
+      <div ref={marquee} className="bz-marquee" hidden />
       {empty && (
         <div className="bz-empty">
           <p className="bx-label">00 / Empty canvas</p>

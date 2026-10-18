@@ -21,7 +21,7 @@ export default function App() {
   useEffect(() => {
     applyTheme(useStore.getState().theme)
     const saved = loadAutosave()
-    useStore.getState().load(saved && saved.nodes.length ? saved : exampleProject(EXAMPLES[0]))
+    useStore.getState().load(saved ?? exampleProject(EXAMPLES[0]))
   }, [])
 
   useEffect(() => {
